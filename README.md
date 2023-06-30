@@ -1,16 +1,9 @@
 # circuitpython-SYN6988
 CircuitPython library for the YuTone VoiceTX SYN6988 text to speech module.
 
-     _______________________
-    / This doesn't work yet \
-    \ Don't even try        /
-     -----------------------
-            \   ^__^
-             \  (oo)\_______
-                (__)\       )\/\
-                    ||----w |
-                    ||     ||
+## Demo
 
+https://github.com/scruss/micropython-SYN6988/assets/425706/bf107dc3-3db7-4eb7-90a4-6cfe5986529f
 
 ## Introduction 
 
@@ -57,7 +50,7 @@ The SYN6988 is a 3.3 V device for both logic and power. It requires a
 two-wire UART connection plus an additional digital input pin to
 monitor the busy status of the TTS.
 
-        SYN6988        MicroPython Board     Raspberry Pi Pico
+        SYN6988        CircuitPython Board   Raspberry Pi Pico
 	   =========      ===================   ===================
 	   
 	        RDY            Digital Input         GPIO 2
@@ -74,13 +67,22 @@ For a Raspberry Pi Pico, these connections might be supported in code
 with:
 
 ```python3
-ser = machine.UART(0, baudrate=9600, bits=8, parity=None, stop=1)
-busyPin = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_UP)
+ser = busio.UART(
+    tx=board.GP0,
+    rx=board.GP1,
+    baudrate=9600,
+    bits=8,
+    parity=None,
+    stop=1,
+)
 
+busyPin = digitalio.DigitalInOut(board.GP2)
+busyPin.direction = digitalio.Direction.INPUT
+busyPin.pull = digitalio.Pull.UP
 ```
 
 Audio output is either through the headphone / line out jack or via
-the speaker pins. This output is unamplified. I can drive a very small
+the speaker pins. This output is unamplified. It can drive a very small
 oval speaker at a comfortable volume from the speaker pins, but large
 heaphones can be very quiet.
 
@@ -100,7 +102,7 @@ when the TTS is not speaking. This LED will go out when the TTS is
 speaking, and the RDY pin will go low shortly (about 0.1 to 0.7 s) after the
 speech starts, and go high when speech is finished.
 
-If the initialization code above is used, the following MicroPython
+If the initialization code above is used, the following CircuitPython
 will speak a rather quiet "Hello" from the board:
 
 ```python3
@@ -149,11 +151,13 @@ brief:
 
 * `[t*]` - tone/pitch: `[t0]` lowest to `[t10]` highest.
 
-* `[x0]` / `[x1]` - interpret a string starting with "sound" as one
-  of several hundred (?) different tones, chimes and alarms. For
-  example `[x1]soundy[d]` plays a rather pleasing chime which I
-  overuse greatly. It's important to use `[d]` after this command or
-  unexpected results will occur. A sound table reference is here: [SYN-6988 Speech with MicroPython – We Saw a Chicken …](https://scruss.com/blog/2023/06/28/syn-6988-speech-with-micropython/)
+* `[x0]` / `[x1]` - interpret a string starting with "sound" as one of
+  59 different tones, chimes and alarms. For example `[x1]soundy[d]`
+  plays a rather pleasing chime which I overuse greatly. It's
+  important to use `[d]` after this command or unexpected results will
+  occur. A sound table reference is here: [SYN-6988 Speech with
+  MicroPython – We Saw a Chicken
+  …](https://scruss.com/blog/2023/06/28/syn-6988-speech-with-micropython/)
   
 * `[v*]` - volume: `[v0]` silent, `[v1]` quietest to `[v10]` loudest.
 
@@ -161,7 +165,7 @@ brief:
 ## Internals
 
 The SYN6988 accepts a wide range of input encodings, none of which are
-supported by MicroPython. It does, however, support UTF16-BE (two
+supported by CircuitPython. It does, however, support UTF16-BE (two
 bytes per char, no BOM, high byte first; eg: "hello" =>
 `b'\x00h\x00e\x00l\x00l\x00o'`) which can be fairly easily fudged to
 work. If our UTF-16BE encoded data is in `data_bytes` and we define

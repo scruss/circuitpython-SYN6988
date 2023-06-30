@@ -1,18 +1,17 @@
 """
- simple MicroPython sender library
+ simple CircuitPython sender library
  for YuTone VoiceTX SYN6988 text to speech synthesizer module
  scruss, 2023-06
  -*- coding: utf-8 -*-
 """
 
-import machine
 import time
 
 
 class SYN6988:
     def __init__(self, uart, busyPin, block=True):
         self.uart = uart
-        self.busy = machine.Signal(busyPin, invert=False)
+        self.busy = busyPin
         self._block = block
 
     @property
@@ -41,7 +40,7 @@ class SYN6988:
         return bytes(buf)
 
     def isBusy(self):
-        return self.busy.value() == True
+        return self.busy.value == True
 
     def speak(self, data):
         data_bytes = self.fauxutf16(data)  # returns bytes object

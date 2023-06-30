@@ -1,17 +1,27 @@
-# very crude MicroPython demo of SYN6988 TTS chip
+# very crude CircuitPython demo of SYN6988 TTS chip
 # scruss, 2023-06
 # look at the embedded text commands for guidance at
-# https://github.com/scruss/micropython-SYN6988
-import machine
+# https://github.com/scruss/circuitpython-SYN6988
+
 import syn6988
+import board
+import busio
+import digitalio
 
+### setup I/O
+ser = busio.UART(
+    tx=board.GP0,
+    rx=board.GP1,
+    baudrate=9600,
+    bits=8,
+    parity=None,
+    stop=1,
+)
 
-### setup device
-ser = machine.UART(
-    0, baudrate=9600, bits=8, parity=None, stop=1
-)  # tx=Pin(0), rx=Pin(1)
+busyPin = digitalio.DigitalInOut(board.GP2)
+busyPin.direction = digitalio.Direction.INPUT
+busyPin.pull = digitalio.Pull.UP
 
-busyPin = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_UP)
 s = syn6988.SYN6988(ser, busyPin)
 
 
