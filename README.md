@@ -1,5 +1,5 @@
 # circuitpython-SYN6988
-CircuitPython library for the YuTone VoiceTX SYN6988 text to speech module.
+CircuitPython library for the YuTone VoiceTX SYN6988 text to speech module. This is a port of my [micropython-SYN6988](https://github.com/scruss/micropython-SYN6988) library.
 
 ## Demo
 
